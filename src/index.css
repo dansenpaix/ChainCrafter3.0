@@ -1,0 +1,92 @@
+@import "tailwindcss";
+
+@layer base {
+  * {
+    border-color: #27272a; /* zinc-800 */
+  }
+  body {
+    font-family: 'JetBrains Mono', monospace;
+    background-color: #09090b; /* zinc-950 */
+    color: #f4f4f5; /* zinc-100 */
+  }
+}
+
+/* Crisp custom scrollbar for dark mode */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #09090b;
+}
+::-webkit-scrollbar-thumb {
+  background: #27272a;
+  border-radius: 0px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #3f3f46;
+}
+
+/* Sharp retro grid background effect (flat solid dark grid) */
+.bg-cyber-grid {
+  background-image: linear-gradient(to right, #18181b 1px, transparent 1px),
+                    linear-gradient(to bottom, #18181b 1px, transparent 1px);
+  background-size: 24px 24px;
+}
+
+/* Checkerboard pattern for transparent canvas preview */
+.bg-canvas-transparent {
+  background-image: linear-gradient(45deg, #18181b 25%, transparent 25%),
+                    linear-gradient(-45deg, #18181b 25%, transparent 25%),
+                    linear-gradient(45deg, transparent 75%, #18181b 75%),
+                    linear-gradient(-45deg, transparent 75%, #18181b 75%);
+  background-size: 20px 20px;
+  background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
+  background-color: #09090b;
+}
+
+/* Sharp accent borders */
+.border-neon-cyan {
+  border-color: #00f3ff !important;
+}
+.border-neon-pink {
+  border-color: #ff007f !important;
+}
+.border-neon-green {
+  border-color: #39ff14 !important;
+}
+.border-neon-amber {
+  border-color: #ffb700 !important;
+}
+
+.text-neon-cyan {
+  color: #00f3ff;
+}
+.text-neon-pink {
+  color: #ff007f;
+}
+.text-neon-green {
+  color: #39ff14;
+}
+.text-neon-amber {
+  color: #ffb700;
+}
+
+.bg-neon-cyan {
+  background-color: #00f3ff;
+}
+.bg-neon-pink {
+  background-color: #ff007f;
+}
+.bg-neon-green {
+  background-color: #39ff14;
+}
+.bg-neon-amber {
+  background-color: #ffb700;
+}
+
+/* Flat pixelated rendering */
+.image-rendering-pixelated {
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+}
