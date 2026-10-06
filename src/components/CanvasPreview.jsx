@@ -1,7 +1,7 @@
 import React, { useRef, useEffect, useState } from 'react';
 import { Download, FileJson, Eye, EyeOff, ZoomIn, ZoomOut, Maximize2, Sparkles, Check, Zap } from 'lucide-react';
 import confetti from 'canvas-confetti';
-import { CATEGORIES, BACKGROUNDS, BASE_SKINS, OUTFITS, MOUTHS, EYES, HAIR_STYLES, ACCESSORIES, RARITY_COLORS } from '../data/traitData';
+import { CATEGORIES, BACKGROUNDS, BASE_SKINS, OUTFITS, MOUTHS, EYES, HAIR_STYLES, ACCESSORIES, RARITY_COLORS, LAYER_OFFSETS, getLayerOffset } from '../data/traitData';
 import { getCachedImage, loadImagesBatch, preloadAllAssets } from '../utils/assetLoader';
 
 export default function CanvasPreview({
@@ -46,11 +46,18 @@ export default function CanvasPreview({
     if (!canvas) return;
     const ctx = canvas.getContext('2d');
 
-    // Standard 1000x1000 high-res canvas size
+    // Standard 1000x1000 high-res canvas size anchor
     canvas.width = 1000;
     canvas.height = 1000;
 
-    // Sorted categories by painter stack order (1 -> 7)
+    // Mandatory bottom-to-top render stack sequence:
+    // Index 0: BACKGROUND (Solid/Grid)
+    // Index 1: BASE_SKIN (Head, neck, shoulders template)
+    // Index 2: OUTFITS (Clothing collars/hoodies over the shoulders)
+    // Index 3: MOUTH (Snapped to the lower face socket)
+    // Index 4: EYES / EYE OPTICS (Snapped to the eye socket level)
+    // Index 5: HAIR_STYLES & COLORS (Seated over forehead/top of head)
+    // Index 6: ACCESSORIES (Visors, masks, glasses, horns sitting on top)
     const sortedCategories = [...CATEGORIES].sort((a, b) => a.order - b.order);
 
     // Build array of active layer objects
@@ -80,25 +87,46 @@ export default function CanvasPreview({
     const cachedImages = activeLayers.map(l => getCachedImage(l.filePath));
     const allCached = cachedImages.every(img => img && img.complete && img.naturalWidth > 0);
 
-    const drawLayers = (images) => {
+    const drawLayers = (layersWithImages) => {
       ctx.clearRect(0, 0, 1000, 1000);
-      images.forEach(img => {
-        if (img && img.naturalWidth > 0) {
-          ctx.drawImage(img, 0, 0, 1000, 1000);
-        }
+      const baseDim = 1000;
+
+      layersWithImages.forEach(({ layer, img }) => {
+        const isLoaded = img && img.complete && img.naturalWidth > 0;
+        if (!isLoaded) return;
+
+        // Fetch the calibrated offsets (supports category defaults + individual trait overrides)
+        const offset = getLayerOffset(layer.categoryId, layer.traitObj);
+        const scale = offset.scale || 1.0;
+
+        const drawW = baseDim * scale;
+        const drawH = baseDim * scale;
+
+        const drawX = offset.x + ((baseDim - drawW) / 2);
+        const drawY = offset.y + ((baseDim - drawH) / 2);
+
+        ctx.drawImage(img, drawX, drawY, drawW, drawH);
       });
     };
 
     if (allCached) {
       // Immediate 0ms synchronous render
-      drawLayers(cachedImages);
+      const layersWithImages = activeLayers.map((layer, index) => ({
+        layer,
+        img: cachedImages[index]
+      }));
+      drawLayers(layersWithImages);
       setLoading(false);
     } else {
       // Show spinner only while first fetch completes
       setLoading(true);
       loadImagesBatch(activeLayers.map(l => l.filePath)).then(images => {
         if (!isMounted) return;
-        drawLayers(images);
+        const layersWithImages = activeLayers.map((layer, index) => ({
+          layer,
+          img: images[index]
+        }));
+        drawLayers(layersWithImages);
         setLoading(false);
       });
     }
@@ -221,7 +249,7 @@ export default function CanvasPreview({
       </div>
 
       {/* Central Canvas Container */}
-      <div className="relative w-full max-w-[480px] aspect-square bg-canvas-transparent border-2 border-zinc-700 shadow-[4px_4px_0px_0px_#18181b] overflow-hidden flex items-center justify-center">
+      <div className="relative w-full max-w-[520px] aspect-square bg-canvas-transparent border-2 border-zinc-700 shadow-[4px_4px_0px_0px_#18181b] overflow-hidden flex items-center justify-center">
         {/* Loading Overlay */}
         {loading && (
           <div className="absolute inset-0 bg-zinc-950/60 z-20 flex flex-col items-center justify-center space-y-2 backdrop-blur-[2px]">

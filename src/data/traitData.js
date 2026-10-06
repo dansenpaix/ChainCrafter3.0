@@ -59,6 +59,40 @@ export const CATEGORIES = [
   }
 ];
 
+export const LAYER_OFFSETS = {
+  BACKGROUND: { x: 0, y: 0, scale: 1.0 },
+  BASE_SKIN: { x: 0, y: 0, scale: 1.0 },
+  OUTFITS: { x: 0, y: 0, scale: 1.0 },
+  MOUTH: { x: 0, y: 0, scale: 1.0 },
+  EYES: { x: 0, y: 0, scale: 1.0 },
+  HAIR_STYLES: { x: 0, y: 0, scale: 1.0 },
+  ACCESSORIES: { x: 0, y: 0, scale: 1.0 },
+
+  expressions: { x: 0, y: 0, scale: 1.0 },
+  facial_expressions: { x: 0, y: 0, scale: 1.0 },
+  hair: { x: 0, y: 0, scale: 1.0 },
+  accessories: { x: 0, y: 0, scale: 1.0 }
+};
+
+
+export function getLayerOffset(categoryId, traitObj) {
+  if (traitObj && traitObj.offset) {
+    return {
+      x: traitObj.offset.x ?? 0,
+      y: traitObj.offset.y ?? 0,
+      scale: traitObj.offset.scale ?? 1.0
+    };
+  }
+  const catKey = categoryId ? categoryId.toUpperCase() : '';
+  const aliasKey = categoryId ? categoryId.toLowerCase() : '';
+  const offset = LAYER_OFFSETS[catKey] || LAYER_OFFSETS[aliasKey] || { x: 0, y: 0, scale: 1.0 };
+  return {
+    x: offset.x ?? 0,
+    y: offset.y ?? 0,
+    scale: offset.scale ?? 1.0
+  };
+}
+
 export const BACKGROUNDS = [
   { id: 'solid_obsidian', name: 'Solid Obsidian', file: '/nft_pfp_pack_v2/BACKGROUNDS/solid_obsidian.png', rarity: 'Common', colorHex: '#09090b', type: 'Solid' },
   { id: 'solid_electric_blue', name: 'Solid Electric Blue', file: '/nft_pfp_pack_v2/BACKGROUNDS/solid_electric_blue.png', rarity: 'Common', colorHex: '#0070f3', type: 'Solid' },

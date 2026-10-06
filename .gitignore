@@ -17,6 +17,17 @@ dist-ssr/
 .env.test.local
 .env.production.local
 
+# Scratch scripts and temporary test images
+*.cjs
+test_*.png
+test_*.js
+scratch_*.js
+inspect_*.js
+generate_*.js
+analyze.js
+copy_v2_to_public.js
+avatar_*.png
+
 .vscode/*
 !.vscode/extensions.json
 .idea
