@@ -9,8 +9,8 @@ const imageCache = new Map();
 export function getCachedImage(url) {
   if (!url) return null;
   
-  // Append cache buster version param for master clean realigned v7.0 assets
-  const versionedUrl = url.includes('?') ? url : `${url}?v=7.0`;
+  // Append cache buster version param for pristine restored base skins & calibrated eyes
+  const versionedUrl = url.includes('?') ? url : `${url}?v=10.0`;
 
   if (imageCache.has(versionedUrl)) {
     return imageCache.get(versionedUrl);
